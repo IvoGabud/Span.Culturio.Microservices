@@ -1,0 +1,6 @@
+@Span.Culturio.CultureObjects_HostAddress = http://localhost:5002
+
+GET {{Span.Culturio.CultureObjects_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

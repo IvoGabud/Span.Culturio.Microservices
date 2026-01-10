@@ -1,0 +1,6 @@
+@Span.Culturio.Auth_HostAddress = http://localhost:5288
+
+GET {{Span.Culturio.Auth_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
