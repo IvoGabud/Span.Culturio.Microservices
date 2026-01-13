@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Span.Culturio.Auth.Data;
+using Span.Culturio.Shared.Data;
 using Span.Culturio.Auth.Services.Interfaces;
 using Span.Culturio.Shared.Models.DTOs;
 using Span.Culturio.Shared.Models.Entities;

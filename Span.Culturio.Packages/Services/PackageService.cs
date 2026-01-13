@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Span.Culturio.Packages.Data;
+using Span.Culturio.Shared.Data;
 using Span.Culturio.Packages.Services.Interfaces;
 using Span.Culturio.Shared.Models.Entities;
 

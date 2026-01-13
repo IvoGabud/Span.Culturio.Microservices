@@ -52,16 +52,16 @@ Loggovi sadrže Application svojstvo koje govori kojem mikroservisu pripadaju.
 
 #### 4. Kreirajte bazu podataka
 
-Pokrenite migracije iz **Auth servisa** (samo jednom):
+Pokrenite migracije iz **Shared projekta** (samo jednom):
 
 ```bash
-cd Span.Culturio.Auth
-dotnet ef database update
+cd Span.Culturio.Shared
+dotnet ef database update --startup-project ../Span.Culturio.Auth
 ```
 
 Baza će se automatski popuniti s testnim podatcima:
 
-- **Admin korisnik**: username: `admin`, password: `admin`
+- **Admin korisnik**: username: `admin`, password: `Admin123!`
 - **3 paketa**: Osnovni paket (30 dana), Premium paket (90 dana), Godišnji paket (365 dana)
 - **3 kulturna objekta**: Muzej Mimara, Hrvatsko narodno kazalište, Muzej suvremene umjetnosti
 - **9 PackageCultureObject** relacija sa definiranim brojem posjeta

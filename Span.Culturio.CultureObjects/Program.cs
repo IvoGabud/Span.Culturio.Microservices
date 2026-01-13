@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Span.Culturio.CultureObjects.Data;
+using Span.Culturio.Shared.Data;
 using Span.Culturio.CultureObjects.Middleware;
 using Span.Culturio.CultureObjects.Services;
 using Span.Culturio.CultureObjects.Services.Interfaces;

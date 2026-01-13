@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Span.Culturio.Auth.Data;
+using Span.Culturio.Shared.Data;
 
 #nullable disable
 
-namespace Span.Culturio.Auth.Migrations
+namespace Span.Culturio.Shared.Data.Migrations
 {
     [DbContext(typeof(CulturioDbContext))]
     partial class CulturioDbContextModelSnapshot : ModelSnapshot

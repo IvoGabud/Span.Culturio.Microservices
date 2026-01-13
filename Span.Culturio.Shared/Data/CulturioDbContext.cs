@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Span.Culturio.Shared.Models.Entities;
 
-namespace Span.Culturio.Subscriptions.Data
+namespace Span.Culturio.Shared.Data
 {
     public class CulturioDbContext : DbContext
     {

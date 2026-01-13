@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Span.Culturio.Shared.Models.DTOs;
-using Span.Culturio.Users.Data;
+using Span.Culturio.Shared.Data;
 using Span.Culturio.Users.Services.Interfaces;
 
 namespace Span.Culturio.Users.Services
