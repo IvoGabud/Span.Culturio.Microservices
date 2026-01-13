@@ -11,8 +11,10 @@ using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
+    .Enrich.WithProperty("Application", "Users Service")
     .WriteTo.Console()
     .WriteTo.File("logs/users-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Seq("http://localhost:5341")
     .CreateLogger();
 
 try

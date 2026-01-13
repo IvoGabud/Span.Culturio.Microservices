@@ -13,8 +13,10 @@ using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
+    .Enrich.WithProperty("Application", "Auth Service")
     .WriteTo.Console()
     .WriteTo.File("logs/auth-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Seq("http://localhost:5341")
     .CreateLogger();
 
 try

@@ -13,8 +13,10 @@ using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
+    .Enrich.WithProperty("Application", "CultureObjects Service")
     .WriteTo.Console()
     .WriteTo.File("logs/cultureobjects-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Seq("http://localhost:5341")
     .CreateLogger();
 
 try
