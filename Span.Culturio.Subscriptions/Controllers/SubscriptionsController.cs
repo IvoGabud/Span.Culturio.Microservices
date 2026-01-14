@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Span.Culturio.Shared.Models.DTOs;
+using Span.Culturio.Subscriptions.Models.DTOs;
 using Span.Culturio.Subscriptions.Services.Interfaces;
 
 namespace Span.Culturio.Subscriptions.Controllers
@@ -68,12 +68,12 @@ namespace Span.Culturio.Subscriptions.Controllers
         {
             _logger.LogInformation("POST /subscriptions/track-visit - Tracking visit");
 
-            var result = await _subscriptionService.TrackVisitAsync(dto);
+            var (success, errorMessage) = await _subscriptionService.TrackVisitAsync(dto);
 
-            if (!result)
+            if (!success)
             {
-                _logger.LogWarning("Unable to track visit");
-                return BadRequest(new { message = "Unable to track visit" });
+                _logger.LogWarning("Unable to track visit: {ErrorMessage}", errorMessage);
+                return BadRequest(new { message = errorMessage });
             }
 
             return Ok(new { message = "Visit tracked successfully" });

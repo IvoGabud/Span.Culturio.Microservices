@@ -1,14 +1,15 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Span.Culturio.Shared.Data;
+using Span.Culturio.Packages.Data;
 using Span.Culturio.Packages.Middleware;
 using Span.Culturio.Packages.Services;
 using Span.Culturio.Packages.Services.Interfaces;
-using Span.Culturio.Shared.Validators;
+using Span.Culturio.Packages.Validators;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
@@ -27,12 +28,13 @@ try
 
     builder.Host.UseSerilog();
 
-    builder.Services.AddDbContext<CulturioDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    builder.Services.AddDbContext<PackagesDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("PackagesConnection")));
 
     builder.Services.AddScoped<IPackageService, PackageService>();
 
-    builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
+    builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddValidatorsFromAssemblyContaining<GetPackagesQueryDtoValidator>();
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -53,7 +55,7 @@ try
     builder.Services.AddAuthorization();
 
     builder.Services.AddHealthChecks()
-        .AddDbContextCheck<CulturioDbContext>();
+        .AddDbContextCheck<PackagesDbContext>();
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();

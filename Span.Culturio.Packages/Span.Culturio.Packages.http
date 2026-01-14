@@ -1,6 +1,6 @@
-@Span.Culturio.Packages_HostAddress = http://localhost:5191
+@baseUrl = https://localhost:5005
+@token = {{your-jwt-token}}
 
-GET {{Span.Culturio.Packages_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
+### Get All Packages
+GET {{baseUrl}}/packages?page=1&pageSize=10
+Authorization: Bearer {{token}}

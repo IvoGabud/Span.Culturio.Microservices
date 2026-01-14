@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Span.Culturio.Shared.Data;
+using Span.Culturio.Auth.Data;
 using Span.Culturio.Auth.Services.Interfaces;
-using Span.Culturio.Shared.Models.DTOs;
-using Span.Culturio.Shared.Models.Entities;
+using Span.Culturio.Auth.Models.DTOs;
+using Span.Culturio.Auth.Models.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,11 +12,11 @@ namespace Span.Culturio.Auth.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly CulturioDbContext _context;
+        private readonly UsersDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(CulturioDbContext context, IConfiguration configuration, ILogger<AuthService> logger)
+        public AuthService(UsersDbContext context, IConfiguration configuration, ILogger<AuthService> logger)
         {
             _context = context;
             _configuration = configuration;

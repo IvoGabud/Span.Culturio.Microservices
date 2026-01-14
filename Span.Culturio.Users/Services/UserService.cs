@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using Span.Culturio.Shared.Models.DTOs;
-using Span.Culturio.Shared.Data;
+using Span.Culturio.Users.Models.DTOs;
+using Span.Culturio.Users.Data;
 using Span.Culturio.Users.Services.Interfaces;
 
 namespace Span.Culturio.Users.Services
 {
     public class UserService : IUserService
     {
-        private readonly CulturioDbContext _context;
+        private readonly UsersDbContext _context;
         private readonly ILogger<UserService> _logger;
 
-        public UserService(CulturioDbContext context, ILogger<UserService> logger)
+        public UserService(UsersDbContext context, ILogger<UserService> logger)
         {
             _context = context;
             _logger = logger;

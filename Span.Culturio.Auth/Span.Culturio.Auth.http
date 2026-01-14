@@ -1,6 +1,31 @@
-@Span.Culturio.Auth_HostAddress = http://localhost:5288
+@baseUrl = https://localhost:5001
 
-GET {{Span.Culturio.Auth_HostAddress}}/weatherforecast/
-Accept: application/json
+### Register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
 
-###
+{
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test.user@example.com",
+  "username": "testuser",
+  "password": "Test123!@#"
+}
+
+### Login (admin)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### Login (testuser)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "Test123!@#"
+}

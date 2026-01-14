@@ -1,4 +1,4 @@
-using Span.Culturio.Shared.Models.DTOs;
+using Span.Culturio.Auth.Models.DTOs;
 
 namespace Span.Culturio.Auth.Services.Interfaces
 {

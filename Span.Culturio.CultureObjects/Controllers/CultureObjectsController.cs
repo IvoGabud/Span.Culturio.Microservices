@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Span.Culturio.CultureObjects.Services.Interfaces;
-using Span.Culturio.Shared.Models.DTOs;
+using Span.Culturio.CultureObjects.Models.DTOs;
 
 namespace Span.Culturio.CultureObjects.Controllers
 {

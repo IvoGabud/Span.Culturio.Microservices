@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Span.Culturio.Packages.Models.DTOs;
 using Span.Culturio.Packages.Services.Interfaces;
 
 namespace Span.Culturio.Packages.Controllers
@@ -20,11 +21,11 @@ namespace Span.Culturio.Packages.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] GetPackagesQueryDto query)
         {
-            _logger.LogInformation("GET /packages - Fetching all packages");
+            _logger.LogInformation("GET /packages - Fetching packages (Page: {Page}, PageSize: {PageSize})", query.Page, query.PageSize);
 
-            var packages = await _packageService.GetAllAsync();
+            var (packages, totalCount) = await _packageService.GetAllAsync(query.Page, query.PageSize);
 
             var result = packages.Select(p => new
             {
@@ -38,7 +39,14 @@ namespace Span.Culturio.Packages.Controllers
                 p.ValidDays
             });
 
-            return Ok(result);
+            return Ok(new
+            {
+                Data = result,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+            });
         }
     }
 }

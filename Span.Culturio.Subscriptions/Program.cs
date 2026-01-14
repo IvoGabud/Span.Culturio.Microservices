@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Span.Culturio.Shared.Data;
+using Span.Culturio.Subscriptions.Data;
 using Span.Culturio.Subscriptions.Middleware;
 using Span.Culturio.Subscriptions.Services;
 using Span.Culturio.Subscriptions.Services.Interfaces;
-using Span.Culturio.Shared.Validators;
+using Span.Culturio.Subscriptions.Validators;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
@@ -27,12 +27,12 @@ try
 
     builder.Host.UseSerilog();
 
-    builder.Services.AddDbContext<CulturioDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    builder.Services.AddDbContext<SubscriptionsDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("SubscriptionsConnection")));
 
     builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
-    builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<CreateSubscriptionDtoValidator>();
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -53,7 +53,7 @@ try
     builder.Services.AddAuthorization();
 
     builder.Services.AddHealthChecks()
-        .AddDbContextCheck<CulturioDbContext>();
+        .AddDbContextCheck<SubscriptionsDbContext>();
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();

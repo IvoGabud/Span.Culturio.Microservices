@@ -1,5 +1,5 @@
-using Span.Culturio.Shared.Models.DTOs;
-using Span.Culturio.Shared.Models.Entities;
+using Span.Culturio.CultureObjects.Models.DTOs;
+using Span.Culturio.CultureObjects.Models.Entities;
 
 namespace Span.Culturio.CultureObjects.Services.Interfaces
 {

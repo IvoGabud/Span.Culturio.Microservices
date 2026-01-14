@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Span.Culturio.Auth.Services.Interfaces;
-using Span.Culturio.Shared.Models.DTOs;
+using Span.Culturio.Auth.Models.DTOs;
 
 namespace Span.Culturio.Auth.Controllers
 {

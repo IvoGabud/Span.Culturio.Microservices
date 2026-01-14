@@ -1,6 +1,40 @@
-@Span.Culturio.Subscriptions_HostAddress = http://localhost:5131
+@baseUrl = https://localhost:5004
+@token = {{your-jwt-token}}
 
-GET {{Span.Culturio.Subscriptions_HostAddress}}/weatherforecast/
-Accept: application/json
+### Create Subscription
+POST {{baseUrl}}/subscriptions
+Content-Type: application/json
+Authorization: Bearer {{token}}
 
-###
+{
+  "userId": 1,
+  "packageId": 1,
+  "name": "Moja muzejska kartica"
+}
+
+### Get Subscriptions
+GET {{baseUrl}}/subscriptions
+Authorization: Bearer {{token}}
+
+### Get Subscriptions by User
+GET {{baseUrl}}/subscriptions?userId=1
+Authorization: Bearer {{token}}
+
+### Activate Subscription
+POST {{baseUrl}}/subscriptions/activate
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "subscriptionId": 1
+}
+
+### Track Visit
+POST {{baseUrl}}/subscriptions/track-visit
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "subscriptionId": 1,
+  "cultureObjectId": 1
+}

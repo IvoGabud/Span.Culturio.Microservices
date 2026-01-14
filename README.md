@@ -32,7 +32,10 @@ Kreirajte `secrets.json` sa sljedećim sadržajem:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=CulturioMicroservices;Trusted_Connection=True;TrustServerCertificate=True"
+    "UsersConnection": "Server=localhost\\SQLEXPRESS;Database=Culturio.Users;Trusted_Connection=True;TrustServerCertificate=True",
+    "CultureObjectsConnection": "Server=localhost\\SQLEXPRESS;Database=Culturio.CultureObjects;Trusted_Connection=True;TrustServerCertificate=True",
+    "PackagesConnection": "Server=localhost\\SQLEXPRESS;Database=Culturio.Packages;Trusted_Connection=True;TrustServerCertificate=True",
+    "SubscriptionsConnection": "Server=localhost\\SQLEXPRESS;Database=Culturio.Subscriptions;Trusted_Connection=True;TrustServerCertificate=True"
   },
   "JwtSettings": {
     "Secret": "6f47f0b3c2efa549bfdd7b1e6bed694a"
@@ -50,21 +53,30 @@ docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -e SEQ_FIRSTR
 
 Loggovi sadrže Application svojstvo koje govori kojem mikroservisu pripadaju.
 
-#### 4. Kreirajte bazu podataka
+#### 4. Kreirajte baze podataka
 
-Pokrenite migracije iz **Shared projekta** (samo jednom):
+Svaki mikroservis ima svoju zasebnu bazu podataka. Pokrenite migracije za svaki servis:
 
 ```bash
-cd Span.Culturio.Shared
-dotnet ef database update --startup-project ../Span.Culturio.Auth
+cd Span.Culturio.Auth
+dotnet ef database update
+
+cd ../Span.Culturio.CultureObjects
+dotnet ef database update
+
+cd ../Span.Culturio.Packages
+dotnet ef database update
+
+cd ../Span.Culturio.Subscriptions
+dotnet ef database update
 ```
 
-Baza će se automatski popuniti s testnim podatcima:
+Baze će se automatski popuniti s testnim podatcima:
 
-- **Admin korisnik**: username: `admin`, password: `Admin123!`
-- **3 paketa**: Osnovni paket (30 dana), Premium paket (90 dana), Godišnji paket (365 dana)
-- **3 kulturna objekta**: Muzej Mimara, Hrvatsko narodno kazalište, Muzej suvremene umjetnosti
-- **9 PackageCultureObject** relacija sa definiranim brojem posjeta
+- **Culturio.Users**: Admin korisnik (username: `admin`, password: `Admin123!`)
+- **Culturio.CultureObjects**: 3 kulturna objekta (Muzej Mimara, HNK, MSU)
+- **Culturio.Packages**: 3 paketa (Osnovni, Premium, Godišnji) + PackageCultureObject relacije
+- **Culturio.Subscriptions**: Prazna (pretplate se kreiraju kroz API)
 
 #### 5. Pokrenite mikroservise
 

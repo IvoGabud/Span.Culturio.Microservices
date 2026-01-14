@@ -1,6 +1,10 @@
-@Span.Culturio.Users_HostAddress = http://localhost:5258
+@baseUrl = https://localhost:5002
+@token = {{your-jwt-token}}
 
-GET {{Span.Culturio.Users_HostAddress}}/weatherforecast/
-Accept: application/json
+### Get Users (Admin only)
+GET {{baseUrl}}/users?page=1&pageSize=10
+Authorization: Bearer {{token}}
 
-###
+### Get User by ID (Admin only)
+GET {{baseUrl}}/users/1
+Authorization: Bearer {{token}}

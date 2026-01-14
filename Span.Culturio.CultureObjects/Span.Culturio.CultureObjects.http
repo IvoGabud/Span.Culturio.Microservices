@@ -1,6 +1,24 @@
-@Span.Culturio.CultureObjects_HostAddress = http://localhost:5002
+@baseUrl = https://localhost:5003
+@token = {{your-jwt-token}}
 
-GET {{Span.Culturio.CultureObjects_HostAddress}}/weatherforecast/
-Accept: application/json
+### Create Culture Object
+POST {{baseUrl}}/culture-objects
+Content-Type: application/json
+Authorization: Bearer {{token}}
 
-###
+{
+  "name": "Moderna galerija Zagreb",
+  "contactEmail": "info@moderna.hr",
+  "address": "Andrije Hebranga 1",
+  "zipCode": 10000,
+  "city": "Zagreb",
+  "adminUserId": 1
+}
+
+### Get All Culture Objects
+GET {{baseUrl}}/culture-objects
+Authorization: Bearer {{token}}
+
+### Get Culture Object by ID
+GET {{baseUrl}}/culture-objects/1
+Authorization: Bearer {{token}}

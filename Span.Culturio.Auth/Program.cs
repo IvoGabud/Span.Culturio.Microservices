@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Span.Culturio.Shared.Data;
+using Span.Culturio.Auth.Data;
 using Span.Culturio.Auth.Middleware;
 using Span.Culturio.Auth.Services;
 using Span.Culturio.Auth.Services.Interfaces;
-using Span.Culturio.Shared.Validators;
+using Span.Culturio.Auth.Validators;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
@@ -27,8 +27,8 @@ try
 
     builder.Host.UseSerilog();
 
-    builder.Services.AddDbContext<CulturioDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    builder.Services.AddDbContext<UsersDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("UsersConnection")));
 
     builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -53,7 +53,7 @@ try
     builder.Services.AddAuthorization();
 
     builder.Services.AddHealthChecks()
-        .AddDbContextCheck<CulturioDbContext>();
+        .AddDbContextCheck<UsersDbContext>();
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();

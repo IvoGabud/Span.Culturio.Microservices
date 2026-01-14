@@ -1,5 +1,5 @@
-using Span.Culturio.Shared.Models.DTOs;
-using Span.Culturio.Shared.Models.Entities;
+using Span.Culturio.Subscriptions.Models.DTOs;
+using Span.Culturio.Subscriptions.Models.Entities;
 
 namespace Span.Culturio.Subscriptions.Services.Interfaces
 {
@@ -7,7 +7,7 @@ namespace Span.Culturio.Subscriptions.Services.Interfaces
     {
         Task<Subscription> CreateAsync(CreateSubscriptionDto dto);
         Task<List<Subscription>> GetSubscriptionsAsync(int? userId);
-        Task<bool> TrackVisitAsync(TrackVisitDto dto);
+        Task<(bool Success, string? ErrorMessage)> TrackVisitAsync(TrackVisitDto dto);
         Task<bool> ActivateSubscriptionAsync(ActivateSubscriptionDto dto);
     }
 }

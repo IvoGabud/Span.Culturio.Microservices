@@ -1,17 +1,17 @@
 using Microsoft.EntityFrameworkCore;
-using Span.Culturio.Shared.Data;
+using Span.Culturio.Subscriptions.Data;
 using Span.Culturio.Subscriptions.Services.Interfaces;
-using Span.Culturio.Shared.Models.DTOs;
-using Span.Culturio.Shared.Models.Entities;
+using Span.Culturio.Subscriptions.Models.DTOs;
+using Span.Culturio.Subscriptions.Models.Entities;
 
 namespace Span.Culturio.Subscriptions.Services
 {
     public class SubscriptionService : ISubscriptionService
     {
-        private readonly CulturioDbContext _context;
+        private readonly SubscriptionsDbContext _context;
         private readonly ILogger<SubscriptionService> _logger;
 
-        public SubscriptionService(CulturioDbContext context, ILogger<SubscriptionService> logger)
+        public SubscriptionService(SubscriptionsDbContext context, ILogger<SubscriptionService> logger)
         {
             _context = context;
             _logger = logger;
@@ -20,20 +20,6 @@ namespace Span.Culturio.Subscriptions.Services
         public async Task<Subscription> CreateAsync(CreateSubscriptionDto dto)
         {
             _logger.LogInformation("Creating subscription for User {UserId}, Package {PackageId}", dto.UserId, dto.PackageId);
-
-            var userExists = await _context.Users.AnyAsync(u => u.Id == dto.UserId);
-            if (!userExists)
-            {
-                _logger.LogWarning("User with ID {UserId} does not exist", dto.UserId);
-                throw new InvalidOperationException($"User with ID {dto.UserId} does not exist");
-            }
-
-            var packageExists = await _context.Packages.AnyAsync(p => p.Id == dto.PackageId);
-            if (!packageExists)
-            {
-                _logger.LogWarning("Package with ID {PackageId} does not exist", dto.PackageId);
-                throw new InvalidOperationException($"Package with ID {dto.PackageId} does not exist");
-            }
 
             var subscription = new Subscription
             {
@@ -58,9 +44,7 @@ namespace Span.Culturio.Subscriptions.Services
         {
             _logger.LogInformation("Fetching subscriptions" + (userId.HasValue ? $" for User {userId.Value}" : ""));
 
-            var query = _context.Subscriptions
-                .Include(s => s.Package)
-                .AsQueryable();
+            var query = _context.Subscriptions.AsQueryable();
 
             if (userId.HasValue)
                 query = query.Where(s => s.UserId == userId.Value);
@@ -72,20 +56,24 @@ namespace Span.Culturio.Subscriptions.Services
             return subscriptions;
         }
 
-        public async Task<bool> TrackVisitAsync(TrackVisitDto dto)
+        public async Task<(bool Success, string? ErrorMessage)> TrackVisitAsync(TrackVisitDto dto)
         {
             _logger.LogInformation("Tracking visit for Subscription {SubscriptionId}, CultureObject {CultureObjectId}",
                 dto.SubscriptionId, dto.CultureObjectId);
 
             var subscription = await _context.Subscriptions
-                .Include(s => s.Package)
-                    .ThenInclude(p => p.PackageCultureObjects)
                 .FirstOrDefaultAsync(s => s.Id == dto.SubscriptionId);
 
-            if (subscription == null || subscription.State != "active")
+            if (subscription == null)
             {
-                _logger.LogWarning("Subscription {SubscriptionId} not found or not active", dto.SubscriptionId);
-                return false;
+                _logger.LogWarning("Subscription {SubscriptionId} not found", dto.SubscriptionId);
+                return (false, "Subscription not found");
+            }
+
+            if (subscription.State != "active")
+            {
+                _logger.LogWarning("Subscription {SubscriptionId} is not activated", dto.SubscriptionId);
+                return (false, "Subscription is not activated");
             }
 
             if (subscription.ActiveTo.HasValue && subscription.ActiveTo.Value < DateTime.UtcNow)
@@ -93,27 +81,7 @@ namespace Span.Culturio.Subscriptions.Services
                 _logger.LogInformation("Subscription {SubscriptionId} has expired, updating state", dto.SubscriptionId);
                 subscription.State = "expired";
                 await _context.SaveChangesAsync();
-                return false;
-            }
-
-            var packageCultureObject = subscription.Package.PackageCultureObjects
-                .FirstOrDefault(pco => pco.CultureObjectId == dto.CultureObjectId);
-
-            if (packageCultureObject == null)
-            {
-                _logger.LogWarning("CultureObject {CultureObjectId} not found in package", dto.CultureObjectId);
-                return false;
-            }
-
-            var visitsToThisCultureObject = await _context.Visits
-                .CountAsync(v => v.SubscriptionId == dto.SubscriptionId
-                    && v.CultureObjectId == dto.CultureObjectId);
-
-            if (visitsToThisCultureObject >= packageCultureObject.AvailableVisits)
-            {
-                _logger.LogWarning("Visit limit reached for CultureObject {CultureObjectId} ({Visits}/{Limit})",
-                    dto.CultureObjectId, visitsToThisCultureObject, packageCultureObject.AvailableVisits);
-                return false;
+                return (false, "Subscription has expired");
             }
 
             var visit = new Visit
@@ -130,7 +98,7 @@ namespace Span.Culturio.Subscriptions.Services
 
             _logger.LogInformation("Visit tracked successfully. Total visits: {TotalVisits}", subscription.RecordedVisits);
 
-            return true;
+            return (true, null);
         }
 
         public async Task<bool> ActivateSubscriptionAsync(ActivateSubscriptionDto dto)
@@ -138,7 +106,6 @@ namespace Span.Culturio.Subscriptions.Services
             _logger.LogInformation("Activating subscription {SubscriptionId}", dto.SubscriptionId);
 
             var subscription = await _context.Subscriptions
-                .Include(s => s.Package)
                 .FirstOrDefaultAsync(s => s.Id == dto.SubscriptionId);
 
             if (subscription == null)
@@ -149,7 +116,7 @@ namespace Span.Culturio.Subscriptions.Services
 
             subscription.State = "active";
             subscription.ActiveFrom = DateTime.UtcNow;
-            subscription.ActiveTo = DateTime.UtcNow.AddDays(subscription.Package.ValidDays);
+            subscription.ActiveTo = DateTime.UtcNow.AddDays(30);
 
             await _context.SaveChangesAsync();
 
