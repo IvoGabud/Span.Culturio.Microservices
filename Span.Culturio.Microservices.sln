@@ -16,8 +16,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AC7814D1-0D1A-442A-A1F0-D5C559F5C9F1}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		docker-compose.yml = docker-compose.yml
+		init-db.sql = init-db.sql
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Span.Culturio.ApiGateway", "Span.Culturio.ApiGateway\Span.Culturio.ApiGateway.csproj", "{AED55F99-F62A-4C6D-B87F-6A82730B6F37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,10 @@ Global
 		{88D9B733-97EB-4C38-A937-386A8707D4E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88D9B733-97EB-4C38-A937-386A8707D4E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88D9B733-97EB-4C38-A937-386A8707D4E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AED55F99-F62A-4C6D-B87F-6A82730B6F37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AED55F99-F62A-4C6D-B87F-6A82730B6F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AED55F99-F62A-4C6D-B87F-6A82730B6F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AED55F99-F62A-4C6D-B87F-6A82730B6F37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

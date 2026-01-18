@@ -12,12 +12,14 @@ using Span.Culturio.Users.Services.Interfaces;
 using Span.Culturio.Users.Validators;
 using System.Text;
 
+var seqUrl = Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://localhost:5341";
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.WithProperty("Application", "Users Service")
     .WriteTo.Console()
     .WriteTo.File("logs/users-.txt", rollingInterval: RollingInterval.Day)
-    .WriteTo.Seq("http://localhost:5341")
+    .WriteTo.Seq(seqUrl)
     .CreateLogger();
 
 try
@@ -95,6 +97,12 @@ try
     });
 
     var app = builder.Build();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+        db.Database.Migrate();
+    }
 
     app.UseMiddleware<GlobalExceptionHandler>();
 

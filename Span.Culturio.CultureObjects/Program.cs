@@ -11,12 +11,14 @@ using Span.Culturio.CultureObjects.Services.Interfaces;
 using Span.Culturio.CultureObjects.Validators;
 using System.Text;
 
+var seqUrl = Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://localhost:5341";
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .Enrich.WithProperty("Application", "CultureObjects Service")
     .WriteTo.Console()
     .WriteTo.File("logs/cultureobjects-.txt", rollingInterval: RollingInterval.Day)
-    .WriteTo.Seq("http://localhost:5341")
+    .WriteTo.Seq(seqUrl)
     .CreateLogger();
 
 try
@@ -93,6 +95,12 @@ try
     });
 
     var app = builder.Build();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<CultureObjectsDbContext>();
+        db.Database.Migrate();
+    }
 
     app.UseMiddleware<GlobalExceptionHandler>();
 

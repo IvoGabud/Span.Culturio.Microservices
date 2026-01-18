@@ -1,0 +1,176 @@
+{
+  "Routes": [
+    {
+      "SwaggerKey": "auth",
+      "DownstreamPathTemplate": "/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "users",
+      "DownstreamPathTemplate": "/users/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "users-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "users",
+      "DownstreamPathTemplate": "/users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "users-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "cultureobjects",
+      "DownstreamPathTemplate": "/culture-objects/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cultureobjects-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/culture-objects/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "cultureobjects",
+      "DownstreamPathTemplate": "/culture-objects",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cultureobjects-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/culture-objects",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "packages",
+      "DownstreamPathTemplate": "/packages/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "packages-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/packages/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "packages",
+      "DownstreamPathTemplate": "/packages",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "packages-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/packages",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "subscriptions",
+      "DownstreamPathTemplate": "/subscriptions/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "subscriptions-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/subscriptions/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "SwaggerKey": "subscriptions",
+      "DownstreamPathTemplate": "/subscriptions",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "subscriptions-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/subscriptions",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "auth",
+      "Config": [
+        {
+          "Name": "Auth API",
+          "Version": "v1",
+          "Url": "http://auth-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "users",
+      "Config": [
+        {
+          "Name": "Users API",
+          "Version": "v1",
+          "Url": "http://users-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "cultureobjects",
+      "Config": [
+        {
+          "Name": "CultureObjects API",
+          "Version": "v1",
+          "Url": "http://cultureobjects-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "packages",
+      "Config": [
+        {
+          "Name": "Packages API",
+          "Version": "v1",
+          "Url": "http://packages-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "subscriptions",
+      "Config": [
+        {
+          "Name": "Subscriptions API",
+          "Version": "v1",
+          "Url": "http://subscriptions-service:8080/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5000"
+  }
+}

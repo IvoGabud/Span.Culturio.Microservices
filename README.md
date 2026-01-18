@@ -6,24 +6,83 @@ Culturio je mikroservisna aplikacija koja povezuje kulturne ustanove (muzeji, ga
 
 Projekt je implementiran kao skup nezavisnih mikroservisa koji komuniciraju preko REST API-ja, s Entity Framework Core integracijom za upravljanje bazom podataka, JWT autentifikacijom za sigurnost i Seq distribuiranim logiranjem.
 
-## Pokretanje Projekta
+Aplikacija je dizajnirana za pokretanje putem Docker Compose-a koji orkestrira sve servise, bazu podataka i API Gateway.
 
-### Preduvjeti
-
-- .NET 8 SDK
-- SQL Server
-- Docker (ukoliko se želi koristiti Seq)
-
-### Instalacija
-
-#### 1. Klonirajte repozitorij
+## Instalacija
 
 ```bash
 git clone https://github.com/IvoGabud/Span.Culturio.Microservices.git
 cd Span.Culturio.Microservices
 ```
 
-#### 2. Konfigurirajte User Secrets
+## Pokretanje s Docker Compose
+
+### Preduvjeti
+
+- Docker
+
+### Konfiguracija (opcionalno)
+
+Moguće je stvoriti `.env` datoteku prema `.env.example` predlošku za prilagodbu konfiguracije. Ako `.env` datoteka nije stvorena, koristit će se default vrijednosti.
+
+```bash
+cp .env.example .env
+```
+
+### Pokretanje
+
+```bash
+docker-compose up --build
+```
+
+Ova naredba pokreće:
+
+- **SQL Server** - baza podataka (port 1433)
+- **SQL Server Init** - inicijalizacija baza podataka (izvršava init-db.sql)
+- **Auth Service** - autentifikacija (port 5001)
+- **Users Service** - upravljanje korisnicima (port 5002)
+- **CultureObjects Service** - kulturni objekti (port 5003)
+- **Packages Service** - paketi pretplata (port 5004)
+- **Subscriptions Service** - pretplate korisnika (port 5005)
+- **API Gateway** - Ocelot gateway (port 5000)
+- **Seq** - distribuirano logiranje (port 5341)
+
+### API Gateway Endpoints
+
+Svi servisi su dostupni kroz API Gateway na `http://localhost:5000`:
+
+| Servis                 | Gateway Endpoint         |
+| ---------------------- | ------------------------ |
+| Auth Service           | `/api/auth/*`            |
+| Users Service          | `/api/users/*`           |
+| CultureObjects Service | `/api/culture-objects/*` |
+| Packages Service       | `/api/packages/*`        |
+| Subscriptions Service  | `/api/subscriptions/*`   |
+
+**Objedinjeni Swagger UI:** http://localhost:5000/swagger - U gornjem desnom kutu nalazi se **"Select a definition"** dropdown izbornik pomoću kojeg možete odabrati koji API želite testirati (Auth, Users, CultureObjects, Packages, Subscriptions).
+
+**Seq UI (logovi):** http://localhost:5341
+
+### Zaustavljanje
+
+```bash
+docker-compose down
+```
+
+Zaustavljanje s brisanjem baze podataka:
+
+```bash
+docker-compose down -v
+```
+
+## Lokalno Pokretanje (bez Dockera)
+
+### Preduvjeti
+
+- .NET 8 SDK
+- SQL Server
+
+### Konfigurirajte User Secrets
 
 Svi mikroservisi dijele **isti** User Secrets ID: `culturio-microservices-secrets`
 
@@ -43,17 +102,7 @@ Kreirajte `secrets.json` sa sljedećim sadržajem:
 }
 ```
 
-#### 3. Pokrenite Seq Server (Docker)
-
-```bash
-docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -e SEQ_FIRSTRUN_NOAUTHENTICATION=True -v seq-data:/data -p 5341:80 datalust/seq
-```
-
-**Seq Web UI:** http://localhost:5341
-
-Loggovi sadrže Application svojstvo koje govori kojem mikroservisu pripadaju.
-
-#### 4. Kreirajte baze podataka
+### Kreirajte baze podataka
 
 Svaki mikroservis ima svoju zasebnu bazu podataka. Pokrenite migracije za svaki servis:
 
@@ -78,7 +127,7 @@ Baze će se automatski popuniti s testnim podatcima:
 - **Culturio.Packages**: 3 paketa (Osnovni, Premium, Godišnji) + PackageCultureObject relacije
 - **Culturio.Subscriptions**: Prazna (pretplate se kreiraju kroz API)
 
-#### 5. Pokrenite mikroservise
+### Pokrenite mikroservise
 
 Svaki mikroservis se pokreće zasebno (`dotnet run` iz direktorija mikroservisa ili putem Visual Studia).
 
@@ -267,7 +316,6 @@ Implementirana je validacija ulaznih parametara koristeći **FluentValidation** 
 **Validatori:**
 
 - `RegisterUserDtoValidator`
-
   - FirstName: obavezan, max 100 znakova
   - LastName: obavezan, max 100 znakova
   - Email: obavezan, validan email format, max 255 znakova
@@ -276,12 +324,10 @@ Implementirana je validacija ulaznih parametara koristeći **FluentValidation** 
   - Role: opcionalno, mora biti "User" ili "Admin"
 
 - `LoginDtoValidator`
-
   - Username: obavezan, max 100 znakova
   - Password: obavezan, max 255 znakova
 
 - `CreateCultureObjectDtoValidator`
-
   - Name: obavezan, max 100 znakova
   - ContactEmail: obavezan, validan email format, max 255 znakova
   - Address: obavezan, max 250 znakova
@@ -290,13 +336,11 @@ Implementirana je validacija ulaznih parametara koristeći **FluentValidation** 
   - AdminUserId: mora biti > 0
 
 - `CreateSubscriptionDtoValidator`
-
   - UserId: mora biti > 0
   - PackageId: mora biti > 0
   - Name: obavezan, max 100 znakova
 
 - `ActivateSubscriptionDtoValidator`
-
   - SubscriptionId: mora biti > 0
 
 - `TrackVisitDtoValidator`

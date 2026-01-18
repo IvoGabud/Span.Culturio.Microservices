@@ -1,0 +1,191 @@
+services:
+  seq:
+    image: datalust/seq:latest
+    container_name: culturio-seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
+    ports:
+      - "5341:80"
+    volumes:
+      - seq-data:/data
+    networks:
+      - culturio-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: culturio-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD:-CulturioPassword123!}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - culturio-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${SA_PASSWORD:-CulturioPassword123!}" -C -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql-tools:latest
+    container_name: culturio-sqlserver-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./init-db.sql:/init-db.sql
+    networks:
+      - culturio-network
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD:-CulturioPassword123!}
+    entrypoint: ["/opt/mssql-tools/bin/sqlcmd", "-S", "sqlserver", "-U", "sa", "-P", "${SA_PASSWORD:-CulturioPassword123!}", "-i", "/init-db.sql"]
+
+  auth-service:
+    build:
+      context: ./Span.Culturio.Auth
+      dockerfile: Dockerfile
+    container_name: culturio-auth
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__UsersConnection=Server=sqlserver;Database=Culturio.Users;User Id=sa;Password=${SA_PASSWORD:-CulturioPassword123!};TrustServerCertificate=True;
+      - JwtSettings__Secret=${JWT_SECRET:-default-jwt-secret-key-min-32-chars!}
+      - JwtSettings__Issuer=${JWT_ISSUER:-CulturioApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-CulturioClient}
+      - JwtSettings__ExpirationInMinutes=60
+      - UseHttpsRedirection=false
+      - SEQ_URL=http://seq:80
+    ports:
+      - "5001:8080"
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    networks:
+      - culturio-network
+    restart: on-failure
+
+  users-service:
+    build:
+      context: ./Span.Culturio.Users
+      dockerfile: Dockerfile
+    container_name: culturio-users
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__UsersConnection=Server=sqlserver;Database=Culturio.Users;User Id=sa;Password=${SA_PASSWORD:-CulturioPassword123!};TrustServerCertificate=True;
+      - JwtSettings__Secret=${JWT_SECRET:-default-jwt-secret-key-min-32-chars!}
+      - JwtSettings__Issuer=${JWT_ISSUER:-CulturioApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-CulturioClient}
+      - UseHttpsRedirection=false
+      - SEQ_URL=http://seq:80
+    ports:
+      - "5002:8080"
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    networks:
+      - culturio-network
+    restart: on-failure
+
+  cultureobjects-service:
+    build:
+      context: ./Span.Culturio.CultureObjects
+      dockerfile: Dockerfile
+    container_name: culturio-cultureobjects
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__CultureObjectsConnection=Server=sqlserver;Database=Culturio.CultureObjects;User Id=sa;Password=${SA_PASSWORD:-CulturioPassword123!};TrustServerCertificate=True;
+      - JwtSettings__Secret=${JWT_SECRET:-default-jwt-secret-key-min-32-chars!}
+      - JwtSettings__Issuer=${JWT_ISSUER:-CulturioApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-CulturioClient}
+      - UseHttpsRedirection=false
+      - SEQ_URL=http://seq:80
+    ports:
+      - "5003:8080"
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    networks:
+      - culturio-network
+    restart: on-failure
+
+  packages-service:
+    build:
+      context: ./Span.Culturio.Packages
+      dockerfile: Dockerfile
+    container_name: culturio-packages
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__PackagesConnection=Server=sqlserver;Database=Culturio.Packages;User Id=sa;Password=${SA_PASSWORD:-CulturioPassword123!};TrustServerCertificate=True;
+      - JwtSettings__Secret=${JWT_SECRET:-default-jwt-secret-key-min-32-chars!}
+      - JwtSettings__Issuer=${JWT_ISSUER:-CulturioApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-CulturioClient}
+      - UseHttpsRedirection=false
+      - SEQ_URL=http://seq:80
+    ports:
+      - "5004:8080"
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    networks:
+      - culturio-network
+    restart: on-failure
+
+  subscriptions-service:
+    build:
+      context: ./Span.Culturio.Subscriptions
+      dockerfile: Dockerfile
+    container_name: culturio-subscriptions
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__SubscriptionsConnection=Server=sqlserver;Database=Culturio.Subscriptions;User Id=sa;Password=${SA_PASSWORD:-CulturioPassword123!};TrustServerCertificate=True;
+      - JwtSettings__Secret=${JWT_SECRET:-default-jwt-secret-key-min-32-chars!}
+      - JwtSettings__Issuer=${JWT_ISSUER:-CulturioApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-CulturioClient}
+      - UseHttpsRedirection=false
+      - SEQ_URL=http://seq:80
+    ports:
+      - "5005:8080"
+    depends_on:
+      sqlserver-init:
+        condition: service_completed_successfully
+    networks:
+      - culturio-network
+    restart: on-failure
+
+  api-gateway:
+    build:
+      context: ./Span.Culturio.ApiGateway
+      dockerfile: Dockerfile
+    container_name: culturio-api-gateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "5000:8080"
+    depends_on:
+      - auth-service
+      - users-service
+      - cultureobjects-service
+      - packages-service
+      - subscriptions-service
+    networks:
+      - culturio-network
+    restart: on-failure
+
+networks:
+  culturio-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:
+  seq-data:
