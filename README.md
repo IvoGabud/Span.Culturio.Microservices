@@ -12,6 +12,7 @@ Aplikacija je dizajnirana za pokretanje putem Docker Compose-a koji orkestrira s
 
 ```bash
 git clone https://github.com/IvoGabud/Span.Culturio.Microservices.git
+git checkout api-gateway-and-docker
 cd Span.Culturio.Microservices
 ```
 
