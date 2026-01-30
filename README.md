@@ -45,6 +45,8 @@ Skripta pokreće Minikube, omogućuje Ingress addon, postavlja Docker environmen
 
 Nakon završetka deploymenta, pokrenite `minikube tunnel` i pristupite aplikaciji na `http://localhost/swagger`.
 
+**Objedinjeni Swagger UI:** U gornjem desnom kutu nalazi se **"Select a definition"** dropdown izbornik pomoću kojeg možete odabrati koji API želite testirati (Auth, Users, CultureObjects, Packages, Subscriptions).
+
 ### Pristup Seq logovima
 
 Seq nije dostupan kroz Ingress jer je to admin/monitoring alat. Za pristup Seq-u koristite port-forward:
@@ -66,6 +68,7 @@ kubectl delete namespace culturio
 ### Preduvjeti
 
 - Docker
+- Docker-compose
 
 ### Konfiguracija (opcionalno)
 
