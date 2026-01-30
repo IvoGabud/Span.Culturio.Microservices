@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: packages-service
+  namespace: culturio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: packages-service
+  template:
+    metadata:
+      labels:
+        app: packages-service
+    spec:
+      containers:
+        - name: packages-service
+          image: culturio-packages:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: culturio-secrets
+                  key: sa-password
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: culturio-config
+                  key: aspnetcore-environment
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            - name: ConnectionStrings__PackagesConnection
+              value: "Server=sqlserver;Database=Culturio.Packages;User Id=sa;Password=$(SA_PASSWORD);TrustServerCertificate=True;"
+            - name: JwtSettings__Secret
+              valueFrom:
+                secretKeyRef:
+                  name: culturio-secrets
+                  key: jwt-secret
+            - name: JwtSettings__Issuer
+              valueFrom:
+                configMapKeyRef:
+                  name: culturio-config
+                  key: jwt-issuer
+            - name: JwtSettings__Audience
+              valueFrom:
+                configMapKeyRef:
+                  name: culturio-config
+                  key: jwt-audience
+            - name: UseHttpsRedirection
+              value: "false"
+            - name: SEQ_URL
+              value: "http://seq:80"
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"

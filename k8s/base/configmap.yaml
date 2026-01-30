@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: culturio-config
+  namespace: culturio
+data:
+  jwt-issuer: "CulturioApi"
+  jwt-audience: "CulturioClient"
+  jwt-expiration: "60"
+  aspnetcore-environment: "Development"

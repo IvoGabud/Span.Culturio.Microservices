@@ -6,13 +6,59 @@ Culturio je mikroservisna aplikacija koja povezuje kulturne ustanove (muzeji, ga
 
 Projekt je implementiran kao skup nezavisnih mikroservisa koji komuniciraju preko REST API-ja, s Entity Framework Core integracijom za upravljanje bazom podataka, JWT autentifikacijom za sigurnost i Seq distribuiranim logiranjem.
 
-Aplikacija je dizajnirana za pokretanje putem Docker Compose-a koji orkestrira sve servise, bazu podataka i API Gateway.
+Aplikacija je dizajnirana za deployment u Kubernetes cluster (Minikube) s Ingress controllerom, ali može se pokrenuti i putem Docker Compose-a ili servis po servis bez Docker-a.
 
 ## Instalacija
 
 ```bash
 git clone https://github.com/IvoGabud/Span.Culturio.Microservices.git
+git checkout kubernetes-deployment
 cd Span.Culturio.Microservices
+```
+
+## Pokretanje s Kubernetes (Minikube)
+
+### Preduvjeti
+
+- Minikube
+- kubectl
+- Docker
+
+### Konfiguracija (opcionalno)
+
+Moguće je prilagoditi konfiguraciju uređivanjem datoteka u `k8s/base/` direktoriju:
+
+- **secrets.yaml** - lozinke i tajni ključevi (SA_PASSWORD, JWT_SECRET, Seq credentials)
+- **configmap.yaml** - JWT postavke (issuer, audience, expiration)
+
+Ako datoteke nisu uređene, koristit će se default vrijednosti prikladne za development okruženje.
+
+### Pokretanje
+
+```bash
+./deploy.sh
+```
+
+**Napomene:** Na operacijskom sustavu Windows, skriptu je moguće pokrenuti koristeći alat Git bash ili neki njemu sličan. Izvođenje skripte može potrajati dulje vrijeme jer uključuje pokretanje Minikube-a i buildanje Docker slika.
+
+Skripta pokreće Minikube, omogućuje Ingress addon, postavlja Docker environment na Minikube, builda Docker slike za sve mikroservise i primjenjuje Kubernetes manifeste iz `k8s/` direktorija. Po potrebi je moguće prilagoditi naredbe u skripti ili ih izvršiti samostalno.
+
+Nakon završetka deploymenta, pokrenite `minikube tunnel` i pristupite aplikaciji na `http://localhost/swagger`.
+
+### Pristup Seq logovima
+
+Seq nije dostupan kroz Ingress jer je to admin/monitoring alat. Za pristup Seq-u koristite port-forward:
+
+```bash
+kubectl port-forward service/seq 5341:80 -n culturio
+```
+
+Seq UI je zatim dostupan na `http://localhost:5341` (login: `admin` / `Admin123!`).
+
+### Brisanje deploymenta
+
+```bash
+kubectl delete namespace culturio
 ```
 
 ## Pokretanje s Docker Compose

@@ -1,0 +1,72 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-init
+  namespace: culturio
+spec:
+  template:
+    spec:
+      containers:
+        - name: db-init
+          image: mcr.microsoft.com/mssql-tools:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              echo "Waiting for SQL Server to be ready..."
+              sleep 30
+              for i in {1..30}; do
+                /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "$SA_PASSWORD" -Q "SELECT 1" && break
+                echo "Attempt $i: SQL Server not ready, waiting..."
+                sleep 5
+              done
+              echo "Running init script..."
+              /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "$SA_PASSWORD" -i /init-db.sql
+          env:
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: culturio-secrets
+                  key: sa-password
+          volumeMounts:
+            - name: init-script
+              mountPath: /init-db.sql
+              subPath: init-db.sql
+      restartPolicy: OnFailure
+      volumes:
+        - name: init-script
+          configMap:
+            name: db-init-script
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-script
+  namespace: culturio
+data:
+  init-db.sql: |
+    -- Create databases
+    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Culturio.Users')
+    BEGIN
+        CREATE DATABASE [Culturio.Users];
+    END
+    GO
+
+    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Culturio.CultureObjects')
+    BEGIN
+        CREATE DATABASE [Culturio.CultureObjects];
+    END
+    GO
+
+    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Culturio.Packages')
+    BEGIN
+        CREATE DATABASE [Culturio.Packages];
+    END
+    GO
+
+    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Culturio.Subscriptions')
+    BEGIN
+        CREATE DATABASE [Culturio.Subscriptions];
+    END
+    GO
+
+    PRINT 'All databases created successfully';
